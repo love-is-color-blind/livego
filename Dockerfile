@@ -5,7 +5,7 @@
 #RUN sudo rpm -Uvh http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-5.el7.nux.noarch.rpm
 #RUN sudo yum install ffmpeg ffmpeg-devel -y
 
-FROM index.docker.io/centos/ffmpeg:4.1-centos
+FROM index.docker.io/jrottenberg/ffmpeg:4.1-centos
 ADD livego /app/livego
 ADD livego.cfg /app/livego.cfg
 RUN sudo chmod +x /app/livego
