@@ -3,6 +3,7 @@ FROM index.docker.io/jrottenberg/ffmpeg:4.1-centos
 ADD livego /app/livego
 ADD livego.cfg /app/livego.cfg
 RUN ls /app
+RUN ls /
 RUN chmod 777 /app/livego
 WORKDIR /app
 VOLUME /app/db.txt
