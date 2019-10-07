@@ -1,7 +1,6 @@
 package core
 
 import (
-	"context"
 	"log"
 	"os/exec"
 	"regexp"
@@ -60,8 +59,7 @@ func (c RtspConverter) start(rtsp string) string {
 		// "ffmpeg -rtsp_transport tcp -i \"" + rtsp + "\" -vcodec copy -acodec aac -f flv  rtmp://localhost:1935/live/" + name
 		log.Println(rtsp)
 
-		ctx, _ := context.WithCancel(context.Background())
-		cmd := exec.CommandContext(ctx, "ffmpeg",
+		cmd := exec.Command("ffmpeg",
 			"-y",
 			"-rtsp_transport", "tcp",
 			"-i", rtsp,
@@ -75,6 +73,7 @@ func (c RtspConverter) start(rtsp string) string {
 		c.data[rtsp] = cmd
 		cmd.Stdout = log.Writer()
 		cmd.Stderr = log.Writer()
+
 		cmd.Start()
 
 		return name
@@ -105,6 +104,9 @@ func (c RtspConverter) KeepAlive() {
 		rtspList := c.GetAll()
 		for _, rtsp := range rtspList {
 			process := c.getProcess(rtsp)
+
+			log.Println("状态", process.ProcessState)
+
 			if process.ProcessState != nil {
 				log.Println(rtsp + " 不是活动状态，正在重启")
 				c.restart(rtsp)
