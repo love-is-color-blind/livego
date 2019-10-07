@@ -4,6 +4,7 @@ import (
 	"log"
 	"os/exec"
 	"regexp"
+	"time"
 )
 
 type RtspConverter struct {
@@ -12,14 +13,22 @@ type RtspConverter struct {
 }
 
 func NewRtspConverter() *RtspConverter {
-	return &RtspConverter{
+	converter := &RtspConverter{
 		data: make(map[string]*exec.Cmd),
 	}
+	go func() {
+		converter.KeepAlive()
+	}()
+
+	return converter
 }
 
 func (c *RtspConverter) Add(rtsp string) string {
-	c.stop(rtsp)
-	return c.start(rtsp)
+	if rtsp != "" {
+		c.stop(rtsp)
+		return c.start(rtsp)
+	}
+	return ""
 }
 
 func (c RtspConverter) Remove(rtsp string) bool {
@@ -33,7 +42,7 @@ func (c RtspConverter) getProcess(rtsp string) *exec.Cmd {
 }
 
 func (c RtspConverter) GetAll() []string {
-	rtspList := make([]string, 5)
+	var rtspList []string
 	for k := range c.data {
 		rtspList = append(rtspList, k)
 	}
@@ -47,21 +56,23 @@ func (c RtspConverter) start(rtsp string) string {
 		r, _ := regexp.Compile("[:/@\\._]")
 		name := r.ReplaceAllString(rtsp, "")
 
-		fullCommand := "-rtsp_transport tcp -i \"" + rtsp + "\" -vcodec copy -acodec copy -f flv  rtmp://localhost:1935/live/" + name
+		// "ffmpeg -rtsp_transport tcp -i \"" + rtsp + "\" -vcodec copy -acodec copy -f flv  rtmp://localhost:1935/live/" + name
 		log.Println(rtsp)
-		log.Println(fullCommand)
 
-		command := exec.Command("ffmpeg",
+		cmd := exec.Command("ffmpeg",
 			"-y",
 			"-rtsp_transport", "tcp",
-			"-i", "\""+rtsp+"\"",
+			"-i", rtsp,
 			"-vcodec", "copy",
-			"-acodec", "copy",
+			"-acodec", "aac",
+
 			"-f", "flv",
 			"rtmp://localhost:1935/live/"+name)
 
-		c.data[rtsp] = command
-		command.Start()
+		c.data[rtsp] = cmd
+
+		cmd.Start()
+
 		//	Tools.ProcessConsole(process).start();
 		return name
 	}
@@ -84,4 +95,19 @@ func (c RtspConverter) restart(rtsp string) {
 	log.Println(rtsp + " restart ...")
 	c.stop(rtsp)
 	c.start(rtsp)
+}
+
+func (c RtspConverter) KeepAlive() {
+	for {
+		rtspList := c.GetAll()
+		for _, rtsp := range rtspList {
+			process := c.getProcess(rtsp)
+			if process.ProcessState != nil {
+				log.Println(rtsp + " 不是活动状态，正在重启")
+				//c.restart(rtsp)
+			}
+
+			time.Sleep(time.Duration(5) * time.Second)
+		}
+	}
 }

@@ -11,16 +11,14 @@ import (
 )
 
 func Serve(l net.Listener) error {
-	mux := http.NewServeMux()
+	loadRtspFormDisk()
 
+	mux := http.NewServeMux()
 	mux.HandleFunc("/list", List)
 	mux.HandleFunc("/add", Add)
 	mux.HandleFunc("/remove", Remove)
 
 	http.Serve(l, mux)
-
-	loadRtspFormDisk()
-
 	return nil
 }
 

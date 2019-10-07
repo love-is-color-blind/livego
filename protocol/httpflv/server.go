@@ -98,7 +98,7 @@ func (server *Server) handleConn(w http.ResponseWriter, r *http.Request) {
 	}
 	path := strings.TrimSuffix(strings.TrimLeft(u, "/"), ".flv")
 	paths := strings.SplitN(path, "/", 2)
-	log.Println("url:", u, "path:", path, "paths:", paths)
+	//log.Println("url:", u, "path:", path, "paths:", paths)
 
 	if len(paths) != 2 {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
