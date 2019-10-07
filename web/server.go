@@ -4,10 +4,11 @@ package web
 import (
 	"encoding/json"
 	"github.com/gwuhaolin/livego/web/core"
-	"github.com/gwuhaolin/livego/web/tools"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
+	"runtime"
 	"strings"
 )
 
@@ -74,7 +75,7 @@ func Remove(w http.ResponseWriter, req *http.Request) {
 }
 
 func getFileName() string {
-	if tools.IsWindows() {
+	if runtime.GOOS == "windows" {
 		return "d:/love-db.json"
 	}
 
@@ -84,15 +85,28 @@ func getFileName() string {
 // 持久化
 func saveRtspToDisk() {
 	rtspList := converter.GetAll()
-	tools.WriteToFile(getFileName(), rtspList)
+	writeToFile(getFileName(), rtspList)
 }
 
 func loadRtspFormDisk() {
-	rtspList := tools.ReadFromFile(getFileName())
+	rtspList := readFromFile(getFileName())
 
 	rtspCount := len(rtspList)
 	for i := 0; i < rtspCount; i++ {
 		rtsp := rtspList[i]
 		converter.Add(rtsp)
 	}
+}
+
+func writeToFile(fileName string, lines []string) {
+	data := []byte(strings.Join(lines, "\n"))
+	ioutil.WriteFile(fileName, data, 777)
+}
+
+func readFromFile(fileName string) []string {
+	data, error := ioutil.ReadFile(fileName)
+	if error != nil {
+		return nil
+	}
+	return strings.Split(string(data), "\n")
 }

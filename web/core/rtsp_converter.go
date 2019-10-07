@@ -114,7 +114,7 @@ func (c RtspConverter) KeepAlive() {
 			process := c.getProcess(rtsp)
 
 			timeout := time.Now().Unix() - process.writer.lastWriteTime
-			if process.cmd.ProcessState != nil || timeout > 10 {
+			if process.cmd.ProcessState != nil || timeout > 30 {
 				log.Println("################ Not Alive , Restarting #######################")
 				c.restart(rtsp)
 			}
