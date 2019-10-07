@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/gwuhaolin/livego/web/core"
 	"github.com/gwuhaolin/livego/web/tools"
+	"log"
 	"net"
 	"net/http"
 	"strings"
@@ -18,8 +19,11 @@ func Serve(l net.Listener) error {
 	mux.HandleFunc("/add", Add)
 	mux.HandleFunc("/remove", Remove)
 
-	http.Serve(l, mux)
-	return nil
+	error := http.Serve(l, mux)
+	if error != nil {
+		log.Println(error)
+	}
+	return error
 }
 
 var converter = core.NewRtspConverter()

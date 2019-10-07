@@ -120,7 +120,7 @@ func startWeb() {
 		go func() {
 			defer func() {
 				if r := recover(); r != nil {
-					log.Println("HTTP-Web server panic: ", r)
+					log.Println("HTTP-Web server panic: ")
 				}
 			}()
 			log.Println("HTTP-Web listen On", *webAddr)

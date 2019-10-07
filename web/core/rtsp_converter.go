@@ -10,12 +10,18 @@ import (
 
 type RtspConverter struct {
 	// map
-	data map[string]*exec.Cmd
+	data map[string]*CmdInfo
+}
+
+type CmdInfo struct {
+	cmd    *exec.Cmd
+	rtsp   string
+	writer MyWriter
 }
 
 func NewRtspConverter() *RtspConverter {
 	converter := &RtspConverter{
-		data: make(map[string]*exec.Cmd),
+		data: make(map[string]*CmdInfo),
 	}
 	go func() {
 		converter.KeepAlive()
@@ -37,7 +43,7 @@ func (c RtspConverter) Remove(rtsp string) bool {
 	return true
 }
 
-func (c RtspConverter) getProcess(rtsp string) *exec.Cmd {
+func (c RtspConverter) getProcess(rtsp string) *CmdInfo {
 	cmd := c.data[rtsp]
 	return cmd
 }
@@ -70,12 +76,15 @@ func (c RtspConverter) start(rtsp string) string {
 			"rtmp://localhost:1935/live/"+name)
 		log.Println(strings.Join(cmd.Args, " "))
 
-		c.data[rtsp] = cmd
-		cmd.Stdout = log.Writer()
-		cmd.Stderr = log.Writer()
-
+		writer := MyWriter{converter: c, rtsp: rtsp, lastWriteTime: time.Now().Unix()}
+		cmd.Stderr = writer
 		cmd.Start()
 
+		c.data[rtsp] = &CmdInfo{
+			cmd:    cmd,
+			rtsp:   rtsp,
+			writer: writer,
+		}
 		return name
 	}
 	return ""
@@ -84,17 +93,16 @@ func (c RtspConverter) start(rtsp string) string {
 func (c RtspConverter) stop(rtsp string) {
 	process := c.getProcess(rtsp)
 	if process != nil {
-		process.Process.Release()
-		process.Process.Kill()
+		process.cmd.Process.Release()
+		process.cmd.Process.Kill()
 	}
-
 }
 
 func (c RtspConverter) restart(rtsp string) {
 	if rtsp == "" {
 		return
 	}
-	log.Println(rtsp + " restart ...")
+	log.Println("############## restart ", rtsp)
 	c.stop(rtsp)
 	c.start(rtsp)
 }
@@ -105,14 +113,26 @@ func (c RtspConverter) KeepAlive() {
 		for _, rtsp := range rtspList {
 			process := c.getProcess(rtsp)
 
-			log.Println("状态", process.ProcessState)
-
-			if process.ProcessState != nil {
-				log.Println(rtsp + " 不是活动状态，正在重启")
+			timeout := time.Now().Unix() - process.writer.lastWriteTime
+			if process.cmd.ProcessState != nil || timeout > 10 {
+				log.Println("################ Not Alive , Restarting #######################")
 				c.restart(rtsp)
 			}
 
-			time.Sleep(time.Duration(5) * time.Second)
+			time.Sleep(5 * time.Second)
 		}
 	}
+}
+
+type MyWriter struct {
+	converter     RtspConverter
+	rtsp          string
+	lastWriteTime int64 // seconds
+}
+
+func (w MyWriter) Write(p []byte) (n int, err error) {
+	w.lastWriteTime = time.Now().Unix()
+	str := string(p)
+	log.Println(str)
+	return len(p), nil
 }
