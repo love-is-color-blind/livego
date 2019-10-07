@@ -5,4 +5,4 @@ ADD livego.cfg /app/livego.cfg
 
 WORKDIR /app/db.txt
 EXPOSE 7777 7001 7002 1935
-ENTRYPOINT ["livego"]
+ENTRYPOINT ["/app/livego"]
