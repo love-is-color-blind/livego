@@ -7,6 +7,8 @@ import (
 	"github.com/gwuhaolin/livego/protocol/httpflv"
 	"github.com/gwuhaolin/livego/protocol/httpopera"
 	"github.com/gwuhaolin/livego/protocol/rtmp"
+	"github.com/gwuhaolin/livego/web"
+	_ "github.com/gwuhaolin/livego/web"
 	"log"
 	"net"
 	"time"
@@ -18,6 +20,7 @@ var (
 	httpFlvAddr    = flag.String("httpflv-addr", ":7001", "HTTP-FLV server listen address")
 	hlsAddr        = flag.String("hls-addr", ":7002", "HLS server listen address")
 	operaAddr      = flag.String("manage-addr", ":8090", "HTTP manage interface server listen address")
+	webAddr        = flag.String("web-addr", ":7777", "HTTP Web interface server listen address")
 	configfilename = flag.String("cfgfile", "livego.cfg", "live configure filename")
 )
 
@@ -107,6 +110,25 @@ func startHTTPOpera(stream *rtmp.RtmpStream) {
 	}
 }
 
+func startWeb() {
+	if *webAddr != "" {
+		opListen, err := net.Listen("tcp", *webAddr)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		go func() {
+			defer func() {
+				if r := recover(); r != nil {
+					log.Println("HTTP-Web server panic: ", r)
+				}
+			}()
+			log.Println("HTTP-Web listen On", *webAddr)
+			web.Serve(opListen)
+		}()
+	}
+}
+
 func main() {
 	defer func() {
 		if r := recover(); r != nil {
@@ -124,7 +146,8 @@ func main() {
 	hlsServer := startHls()
 	startHTTPFlv(stream)
 	startHTTPOpera(stream)
-
+	startWeb()
 	startRtmp(stream, hlsServer)
+
 	//startRtmp(stream, nil)
 }
