@@ -8,7 +8,6 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"runtime"
 	"strings"
 )
 
@@ -74,22 +73,14 @@ func Remove(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte(body))
 }
 
-func getFileName() string {
-	if runtime.GOOS == "windows" {
-		return "d:/love-db.json"
-	}
-
-	return "/home/love-db.json"
-}
-
 // 持久化
 func saveRtspToDisk() {
 	rtspList := converter.GetAll()
-	writeToFile(getFileName(), rtspList)
+	writeToFile("db.txt", rtspList)
 }
 
 func loadRtspFormDisk() {
-	rtspList := readFromFile(getFileName())
+	rtspList := readFromFile("db.txt")
 
 	rtspCount := len(rtspList)
 	for i := 0; i < rtspCount; i++ {
