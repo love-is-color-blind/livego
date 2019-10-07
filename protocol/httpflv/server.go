@@ -101,6 +101,7 @@ func (server *Server) handleConn(w http.ResponseWriter, r *http.Request) {
 	log.Println("url:", u, "path:", path, "paths:", paths)
 
 	if len(paths) != 2 {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		http.Error(w, "invalid path", http.StatusBadRequest)
 		return
 	}
@@ -108,7 +109,9 @@ func (server *Server) handleConn(w http.ResponseWriter, r *http.Request) {
 	// 判断视屏流是否发布,如果没有发布,直接返回404
 	msgs := server.getStreams(w, r)
 	if msgs == nil || len(msgs.Publishers) == 0 {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		http.Error(w, "invalid path", http.StatusNotFound)
+
 		return
 	} else {
 		include := false
@@ -119,7 +122,9 @@ func (server *Server) handleConn(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		if include == false {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
 			http.Error(w, "invalid path", http.StatusNotFound)
+
 			return
 		}
 	}

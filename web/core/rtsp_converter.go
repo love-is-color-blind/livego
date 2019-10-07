@@ -12,7 +12,9 @@ type RtspConverter struct {
 }
 
 func NewRtspConverter() *RtspConverter {
-	return &RtspConverter{}
+	return &RtspConverter{
+		data: make(map[string]*exec.Cmd),
+	}
 }
 
 func (c *RtspConverter) Add(rtsp string) string {
@@ -31,12 +33,11 @@ func (c RtspConverter) getProcess(rtsp string) *exec.Cmd {
 }
 
 func (c RtspConverter) GetAll() []string {
-
-	slice1 := make([]string, 5)
+	rtspList := make([]string, 5)
 	for k := range c.data {
-		slice1 = append(slice1, k)
+		rtspList = append(rtspList, k)
 	}
-	return slice1
+	return rtspList
 }
 
 // 开启一个rtsp 转换服务， 返回 flv hls rtmp 访问地址
@@ -58,8 +59,9 @@ func (c RtspConverter) start(rtsp string) string {
 			"-acodec", "copy",
 			"-f", "flv",
 			"rtmp://localhost:1935/live/"+name)
-		c.data[rtsp] = command
 
+		c.data[rtsp] = command
+		command.Start()
 		//	Tools.ProcessConsole(process).start();
 		return name
 	}

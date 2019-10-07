@@ -7,6 +7,7 @@ import (
 	"github.com/gwuhaolin/livego/web/tools"
 	"net"
 	"net/http"
+	"strings"
 )
 
 func Serve(l net.Listener) error {
@@ -41,6 +42,7 @@ func Add(w http.ResponseWriter, req *http.Request) {
 		if name != "" {
 			saveRtspToDisk()
 			ip := req.Host
+			ip = ip[0:strings.LastIndex(ip, ":")]
 			var flv = "http://" + ip + ":7001/live/" + name + ".flv"
 			var hls = "http://" + ip + ":7002/live/" + name + ".m3u8"
 			var rtmp = "rtmp://" + ip + ":1935/live/" + name
