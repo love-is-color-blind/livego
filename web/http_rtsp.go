@@ -3,39 +3,30 @@ package web
 // 将 RTSP 利用 FFmpeg 转换
 import (
 	"encoding/json"
-	"github.com/gwuhaolin/livego/rtsp"
+	"github.com/gwuhaolin/livego/protocol/rtsp"
 	"io/ioutil"
-	"log"
-	"net"
 	"net/http"
 	"strings"
 )
 
-func Serve(l net.Listener) error {
+func AddRTSPUrl(mux *http.ServeMux) {
 	loadRtspFormDisk()
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/list", List)
-	mux.HandleFunc("/add", Add)
-	mux.HandleFunc("/remove", Remove)
-
-	error := http.Serve(l, mux)
-	if error != nil {
-		log.Println(error)
-	}
-	return error
+	mux.HandleFunc("/list", list)
+	mux.HandleFunc("/add", add)
+	mux.HandleFunc("/remove", remove)
 }
 
 var converter = rtsp.NewRtspConverter()
 
-func List(w http.ResponseWriter, req *http.Request) {
+func list(w http.ResponseWriter, req *http.Request) {
 
 	list := converter.GetAll()
 	resp, _ := json.Marshal(list)
 
 	w.Write(resp)
 }
-func Add(w http.ResponseWriter, req *http.Request) {
+func add(w http.ResponseWriter, req *http.Request) {
 	rtsp := req.FormValue("rtsp")
 	var body = ""
 
@@ -56,7 +47,7 @@ func Add(w http.ResponseWriter, req *http.Request) {
 	}
 	w.Write([]byte(body))
 }
-func Remove(w http.ResponseWriter, req *http.Request) {
+func remove(w http.ResponseWriter, req *http.Request) {
 	rtsp := req.FormValue("rtsp")
 	var body = ""
 

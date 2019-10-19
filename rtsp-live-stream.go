@@ -8,8 +8,10 @@ import (
 	"github.com/gwuhaolin/livego/protocol/rtmp"
 	"github.com/gwuhaolin/livego/web"
 	_ "github.com/gwuhaolin/livego/web"
+	"io/ioutil"
 	"log"
 	"net"
+	"net/http"
 	"time"
 )
 
@@ -89,40 +91,33 @@ func startHTTPFlv(stream *rtmp.RtmpStream) {
 	}()
 }
 
-func startHTTPOpera(stream *rtmp.RtmpStream) {
-	if *operaAddr != "" {
-		opListen, err := net.Listen("tcp", *operaAddr)
-		if err != nil {
-			log.Fatal(err)
-		}
-		opServer := web.New
-		Server(stream, *rtmpAddr)
-		go func() {
-			defer func() {
-				if r := recover(); r != nil {
-					log.Println("HTTP-Operation server panic: ", r)
-				}
-			}()
-			log.Println("HTTP-Operation listen On", *operaAddr)
-			opServer.Serve(opListen)
-		}()
-	}
-}
-
 func startWeb(stream *rtmp.RtmpStream) {
 	if *webAddr != "" {
 		opListen, err := net.Listen("tcp", *webAddr)
 		if err != nil {
 			log.Fatal(err)
 		}
+		mux := http.NewServeMux()
+
+		opServer := web.NewServer(stream, *rtmpAddr)
+		opServer.AddOperaUrl(mux)
+
+		web.AddRTSPUrl(mux)
+
+		mux.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
+			bytes, _ := ioutil.ReadFile("index.html")
+			writer.Write(bytes)
+		})
+
 		go func() {
 			defer func() {
 				if r := recover(); r != nil {
-					log.Println("HTTP-Web server panic: ")
+					log.Println("HTTP-API server panic: ", r)
 				}
 			}()
-			log.Println("HTTP-Web listen On", *webAddr)
-			web.Serve(opListen)
+			log.Println("HTTP-API listen On", *webAddr)
+
+			http.Serve(opListen, mux)
 		}()
 	}
 }
@@ -143,9 +138,7 @@ func main() {
 	stream := rtmp.NewRtmpStream()
 	hlsServer := startHls()
 	startHTTPFlv(stream)
-	startHTTPOpera(stream)
 	startWeb(stream)
 	startRtmp(stream, hlsServer)
 
-	//startRtmp(stream, nil)
 }

@@ -8,7 +8,6 @@ import (
 	"github.com/gwuhaolin/livego/protocol/rtmp/rtmprelay"
 	"io"
 	"log"
-	"net"
 	"net/http"
 )
 
@@ -57,8 +56,7 @@ func NewServer(h av.Handler, rtmpAddr string) *Server {
 	}
 }
 
-func (s *Server) Serve(l net.Listener) error {
-	mux := http.NewServeMux()
+func (s *Server) AddOperaUrl(mux *http.ServeMux) {
 
 	mux.Handle("/statics", http.FileServer(http.Dir("statics")))
 
@@ -71,8 +69,6 @@ func (s *Server) Serve(l net.Listener) error {
 	mux.HandleFunc("/stat/livestat", func(w http.ResponseWriter, r *http.Request) {
 		s.GetLiveStatics(w, r)
 	})
-	http.Serve(l, mux)
-	return nil
 }
 
 type stream struct {
