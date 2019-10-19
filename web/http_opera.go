@@ -57,9 +57,6 @@ func NewServer(h av.Handler, rtmpAddr string) *Server {
 }
 
 func (s *Server) AddOperaUrl(mux *http.ServeMux) {
-
-	mux.Handle("/statics", http.FileServer(http.Dir("statics")))
-
 	mux.HandleFunc("/control/push", func(w http.ResponseWriter, r *http.Request) {
 		s.handlePush(w, r)
 	})
