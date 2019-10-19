@@ -18,7 +18,6 @@ var (
 	rtmpAddr       = flag.String("rtmp-addr", ":1935", "RTMP server listen address")
 	httpFlvAddr    = flag.String("httpflv-addr", ":7001", "HTTP-FLV server listen address")
 	hlsAddr        = flag.String("hls-addr", ":7002", "HLS server listen address")
-	operaAddr      = flag.String("manage-addr", ":8090", "HTTP manage interface server listen address")
 	webAddr        = flag.String("web-addr", ":7777", "HTTP Web interface server listen address")
 	configfilename = flag.String("cfgfile", "livego.cfg", "live configure filename")
 )
@@ -96,7 +95,8 @@ func startHTTPOpera(stream *rtmp.RtmpStream) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		opServer := web.NewServer(stream, *rtmpAddr)
+		opServer := web.New
+		Server(stream, *rtmpAddr)
 		go func() {
 			defer func() {
 				if r := recover(); r != nil {
@@ -109,13 +109,12 @@ func startHTTPOpera(stream *rtmp.RtmpStream) {
 	}
 }
 
-func startWeb() {
+func startWeb(stream *rtmp.RtmpStream) {
 	if *webAddr != "" {
 		opListen, err := net.Listen("tcp", *webAddr)
 		if err != nil {
 			log.Fatal(err)
 		}
-
 		go func() {
 			defer func() {
 				if r := recover(); r != nil {
@@ -145,7 +144,7 @@ func main() {
 	hlsServer := startHls()
 	startHTTPFlv(stream)
 	startHTTPOpera(stream)
-	startWeb()
+	startWeb(stream)
 	startRtmp(stream, hlsServer)
 
 	//startRtmp(stream, nil)

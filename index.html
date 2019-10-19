@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API-DEMO</title>
+</head>
+<body>
+    hello1
+
+
+
+<script>
+
+    window.onload = function () {
+        getList();
+    }
+    
+    function render(list) {
+        alert(JSON.stringify(list))
+    }
+
+    function getList() {
+        var arr = [];
+
+        get('/list', render)
+    }
+
+    function remove() {
+
+    }
+
+    function add() {
+
+    }
+    
+    
+    
+    
+    
+    
+    function get(url, callback) {
+        var xmlhttp;
+        if (window.XMLHttpRequest)
+        {// code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp=new XMLHttpRequest();
+        }
+        else
+        {// code for IE6, IE5
+            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.onreadystatechange=function()
+        {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200)
+            {
+                callback();
+            }
+        }
+        xmlhttp.open("GET", url,true);
+        xmlhttp.send();
+    }
+
+
+</script>
+</body>
+</html>
