@@ -5,57 +5,64 @@
     <title>API-DEMO</title>
 </head>
 <body>
-    hello1
+<input id="addInput">
+<button onclick="add()">add rtsp</button>
 
-
+<ol id="list-box">
+</ol>
 
 <script>
 
     window.onload = function () {
         getList();
     }
-    
+
     function render(list) {
-        alert(JSON.stringify(list))
+        list = list ?  JSON.parse(list) : []
+        var box = document.getElementById('list-box')
+        box.innerHTML = '';
+        for (var i = 0; i < list.length; i++) {
+            var li = document.createElement('li')
+            li.appendChild(document.createTextNode(list[i]))
+
+            var btn = document.createElement('button')
+            btn.onclick = remove
+            btn.innerHTML = '删除'
+            btn.rtsp = list[i];
+
+            li.appendChild(btn)
+            box.appendChild(li)
+        }
     }
 
     function getList() {
-        var arr = [];
-
         get('/list', render)
     }
 
     function remove() {
-
+        var rtsp = this.rtsp;
+        get('/remove?rtsp=' + rtsp, getList)
     }
 
     function add() {
-
+        var rtsp = document.getElementById('addInput').value;
+        get('/add?rtsp=' + rtsp, getList)
     }
-    
-    
-    
-    
-    
-    
+
+
     function get(url, callback) {
         var xmlhttp;
-        if (window.XMLHttpRequest)
-        {// code for IE7+, Firefox, Chrome, Opera, Safari
-            xmlhttp=new XMLHttpRequest();
+        if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp = new XMLHttpRequest();
+        } else {// code for IE6, IE5
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
         }
-        else
-        {// code for IE6, IE5
-            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-        }
-        xmlhttp.onreadystatechange=function()
-        {
-            if (xmlhttp.readyState==4 && xmlhttp.status==200)
-            {
-                callback();
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                callback(xmlhttp.responseText);
             }
         }
-        xmlhttp.open("GET", url,true);
+        xmlhttp.open("GET", url, true);
         xmlhttp.send();
     }
 

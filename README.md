@@ -37,4 +37,7 @@
 
 ### [和 flv.js 搭配使用](https://github.com/gwuhaolin/blog/issues/3)
 
-对Golang感兴趣？请看[Golang 中文学习资料汇总](http://go.wuhaolin.cn/)
+## 测试
+# 获得测试的RTSP流 ？
+使用vlc，可以将mp4，或者其他输入源串流为RTSP
+

@@ -1,4 +1,4 @@
-package rtsp
+package web
 
 // 将rtsp 转换成rtmp
 import (
@@ -41,6 +41,7 @@ func (c *RtspConverter) Add(rtsp string) string {
 
 func (c RtspConverter) Remove(rtsp string) bool {
 	c.stop(rtsp)
+	delete(c.data, rtsp)
 	return true
 }
 
@@ -62,7 +63,7 @@ func (c RtspConverter) GetAll() []string {
 func (c RtspConverter) start(rtsp string) string {
 	if rtsp != "" {
 		r, _ := regexp.Compile("[:/@\\._]")
-		name := r.ReplaceAllString(rtsp, "")
+		name := r.ReplaceAllString(rtsp, "_")
 		// "ffmpeg -rtsp_transport tcp -i \"" + rtsp + "\" -vcodec copy -acodec aac -f flv  rtmp://localhost:1935/live/" + name
 		log.Println(rtsp)
 

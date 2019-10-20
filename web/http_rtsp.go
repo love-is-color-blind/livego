@@ -3,7 +3,6 @@ package web
 // 将 RTSP 利用 FFmpeg 转换
 import (
 	"encoding/json"
-	"github.com/gwuhaolin/livego/protocol/rtsp"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -17,14 +16,18 @@ func AddRTSPUrl(mux *http.ServeMux) {
 	mux.HandleFunc("/remove", remove)
 }
 
-var converter = rtsp.NewRtspConverter()
+var converter = NewRtspConverter()
 
 func list(w http.ResponseWriter, req *http.Request) {
 
 	list := converter.GetAll()
-	resp, _ := json.Marshal(list)
 
-	w.Write(resp)
+	if list != nil {
+		resp, _ := json.Marshal(list)
+
+		w.Write(resp)
+	}
+
 }
 func add(w http.ResponseWriter, req *http.Request) {
 	rtsp := req.FormValue("rtsp")
