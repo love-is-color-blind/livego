@@ -2,23 +2,31 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>API-DEMO</title>
+    <title>API</title>
+    <style>
+        body {
+            width: 900px;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 <body>
-<input id="addInput">
-<button onclick="add()">add rtsp</button>
+    <input id="addInput" size="50" placeholder="RTSP地址">
+    <input type="checkbox">转发到其他服务器</input>
+    <button onclick="add()" >添加</button>
 
-<ol id="list-box">
-</ol>
+<ol id="list-box"></ol>
+
+
+
 
 <script>
-
     window.onload = function () {
         getList();
     }
 
     function render(list) {
-        list = list ?  JSON.parse(list) : []
+        list = list ? JSON.parse(list) : []
         var box = document.getElementById('list-box')
         box.innerHTML = '';
         for (var i = 0; i < list.length; i++) {
