@@ -8,7 +8,6 @@
 FROM index.docker.io/jrottenberg/ffmpeg:4.1-centos
 ADD livego.cfg /app/livego.cfg
 ADD rtsp-live-stream /app/rtsp-live-stream
-RUN chmod 777 rtsp-live-stream
 WORKDIR /app
 VOLUME /app/db.txt
 EXPOSE 7777 7001 7002 1935

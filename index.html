@@ -35,25 +35,12 @@
     <tr>
         <td>#</td>
         <td>RTMP</td>
-        <td>操作</td>
     </tr>
     </thead>
     <tbody>
     </tbody>
 </table>
 
-<h3>RTMP转推</h3>
-<table class="pure-table  pure-table-horizontal pure-table-bordered">
-    <thead>
-    <tr>
-        <td>#</td>
-        <td>流地址</td>
-        <td>操作</td>
-    </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
 
 <script>
     window.onload = function () {
@@ -108,7 +95,7 @@
         list = list ? JSON.parse(list).publishers : []
         var html = [];
         for (var i = 0; i < list.length; i++) {
-            var tr = "<tr><td>{index}</td><td>{rtmp}</td><td><button class='pure-button '  onclick='rtmpRedirect(\"{rtmp}\")'>转推</button></td></tr>"
+            var tr = "<tr><td>{index}</td><td>{rtmp}</td></tr>"
 
             var info = list[i];
 
