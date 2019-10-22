@@ -6,7 +6,7 @@
 #RUN sudo yum install ffmpeg ffmpeg-devel -y
 
 FROM index.docker.io/jrottenberg/ffmpeg:4.1-centos
-ADD livego.cfg /app/livego.cfg
+RUN echo '' > /app/db.txt
 ADD rtsp-live-stream /app/rtsp-live-stream
 WORKDIR /app
 VOLUME /app/db.txt
