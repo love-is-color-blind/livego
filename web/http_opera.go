@@ -57,13 +57,13 @@ func NewServer(h av.Handler, rtmpAddr string) *Server {
 }
 
 func (s *Server) AddOperaUrl(mux *http.ServeMux) {
-	mux.HandleFunc("/control/push", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/rtmp/push", func(w http.ResponseWriter, r *http.Request) {
 		s.handlePush(w, r)
 	})
-	mux.HandleFunc("/control/pull", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/rtmp/pull", func(w http.ResponseWriter, r *http.Request) {
 		s.handlePull(w, r)
 	})
-	mux.HandleFunc("/stat/livestat", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/rtmp/list", func(w http.ResponseWriter, r *http.Request) {
 		s.GetLiveStatics(w, r)
 	})
 }
@@ -179,7 +179,7 @@ func (s *Server) handlePull(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-//http://127.0.0.1:8090/control/push?&oper=start&app=live&name=123456&url=rtmp://192.168.16.136/live/123456
+// ?&oper=start&app=live&name=123456&url=rtmp://192.168.16.136/live/123456
 func (s *Server) handlePush(w http.ResponseWriter, req *http.Request) {
 	var retString string
 	var err error

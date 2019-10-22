@@ -5,50 +5,71 @@
     <title>API</title>
     <link href="https://cdn.bootcss.com/pure/1.0.1/pure-min.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>.button-warning {
-            color: white;
-            background: rgb(223, 117, 20);
-        }
+    <style>
+
         table {
             width: 100%;
         }
     </style>
 </head>
 <body>
-<input id="addInput" size="50" placeholder="RTSP地址">
-<button onclick="add()">添加</button>
-
-<table class="pure-table  pure-table-horizontal pure-table-bordered" >
+<h3>RTSP列表</h3>
+<form class="pure-form">
+    <input id="addInput" size="50" placeholder="RTSP地址">
+    <button onclick="add()" class="pure-button">添加</button>
+</form>
+<table class="pure-table  pure-table-horizontal pure-table-bordered">
     <thead>
     <tr>
-        <td> #</td>
+        <td>#</td>
         <td>流地址</td>
-        <td> 操作</td>
+        <td>操作</td>
     </tr>
     </thead>
     <tbody>
-
     </tbody>
-
+</table>
+<h3>RTMP活动列表</h3>
+<table class="pure-table  pure-table-horizontal pure-table-bordered">
+    <thead>
+    <tr>
+        <td>#</td>
+        <td>RTMP</td>
+        <td>操作</td>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
 </table>
 
-<ol id="list-box"></ol>
-
+<h3>RTMP转推</h3>
+<table class="pure-table  pure-table-horizontal pure-table-bordered">
+    <thead>
+    <tr>
+        <td>#</td>
+        <td>流地址</td>
+        <td>操作</td>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
 
 <script>
     window.onload = function () {
         getList();
+        getRtmpList()
     }
 
     function render(list) {
-        if(list == 'null') {
+        if (list == 'null') {
             return
         }
         list = list ? JSON.parse(list) : []
 
         var html = [];
         for (var i = 0; i < list.length; i++) {
-            var tr = "<tr><td>{index}</td><td>{rtsp}<br>{rtmp}<br>{httpFlv}<br>{hls}</td><td><button class='pure-button button-warning'  onclick='remove(\"{rtsp}\")'>删除</button></td></tr>"
+            var tr = "<tr><td>{index}</td><td>{rtsp}<br>{rtmp}<br>{httpFlv}<br>{hls}</td><td><button class='pure-button '  onclick='remove(\"{rtsp}\")'>删除</button></td></tr>"
 
             var info = list[i];
             for (var k in info) {
@@ -78,6 +99,42 @@
     }
 
 
+    // rtmp
+
+    function renderRtmpList(list) {
+        if (list == 'null' || !list) {
+            return
+        }
+        list = list ? JSON.parse(list).publishers : []
+        var html = [];
+        for (var i = 0; i < list.length; i++) {
+            var tr = "<tr><td>{index}</td><td>{rtmp}</td><td><button class='pure-button '  onclick='rtmpRedirect(\"{rtmp}\")'>转推</button></td></tr>"
+
+            var info = list[i];
+
+            tr = tr.replace("{index}", i + 1);
+            tr = tr.replace("{rtmp}", info.Url);
+            tr = tr.replace("{rtmp}", info.Url);
+
+            html.push(tr)
+        }
+        var box = document.getElementsByTagName('tbody')[1]
+        box.innerHTML = html.join('');
+
+    }
+
+    function getRtmpList() {
+        get("/rtmp/list", renderRtmpList)
+    }
+
+    function rtmpRedirect(localRtmp) {
+        var remoteRtmp = prompt("服务器IP:端口")
+        if (remoteRtmp) {
+            get('http://' + remoteRtmp + '/rtmp/push?&oper=start&app=live&name=123456&url=' + localRtmp)
+        }
+    }
+
+
     function get(url, callback) {
         var xmlhttp;
         if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -93,8 +150,6 @@
         xmlhttp.open("GET", url, true);
         xmlhttp.send();
     }
-
-
 </script>
 </body>
 </html>
