@@ -19,6 +19,9 @@
 ## 使用
 docker hub 中搜索 rtsp-live-stream
 
+可以持久化 /app/db.txt 防止重启后数据丢失
+
+
 ## 测试
 # 获得测试的RTSP流 ？
 使用vlc，可以将mp4，或者其他输入源串流为RTSP
