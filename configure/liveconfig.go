@@ -35,15 +35,6 @@ func LoadConfig() error {
 	return nil
 }
 
-func CheckAppName(appname string) bool {
-	for _, app := range RtmpServercfg.Server {
-		if (app.Appname == appname) && (app.Liveon == "on") {
-			return true
-		}
-	}
-	return false
-}
-
 func GetStaticPushUrlList(appname string) ([]string, bool) {
 	for _, app := range RtmpServercfg.Server {
 		if (app.Appname == appname) && (app.Liveon == "on") {

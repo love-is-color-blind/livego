@@ -112,13 +112,6 @@ func (s *Server) handleConn(conn *core.Conn) error {
 
 	appname, _, _ := connServer.GetInfo()
 
-	if ret := configure.CheckAppName(appname); !ret {
-		err := errors.New(fmt.Sprintf("application name=%s is not configured", appname))
-		conn.Close()
-		log.Println("CheckAppName err:", err)
-		return err
-	}
-
 	log.Printf("handleConn: IsPublisher=%v", connServer.IsPublisher())
 	if connServer.IsPublisher() {
 		if pushlist, ret := configure.GetStaticPushUrlList(appname); ret && (pushlist != nil) {
@@ -284,7 +277,7 @@ func (v *VirWriter) Write(p *av.Packet) (err error) {
 }
 
 func (v *VirWriter) SendPacket() error {
-	Flush := reflect.ValueOf(v.conn).MethodByName("Flush");
+	Flush := reflect.ValueOf(v.conn).MethodByName("Flush")
 	var cs core.ChunkStream
 	for {
 		p, ok := <-v.packetQueue
@@ -313,7 +306,7 @@ func (v *VirWriter) SendPacket() error {
 				v.closed = true
 				return err
 			}
-			Flush.Call(nil);
+			Flush.Call(nil)
 		} else {
 			return errors.New("closed")
 		}
