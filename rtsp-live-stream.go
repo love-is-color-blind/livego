@@ -6,7 +6,6 @@ import (
 	"github.com/gwuhaolin/livego/protocol/httpflv"
 	"github.com/gwuhaolin/livego/protocol/rtmp"
 	"github.com/gwuhaolin/livego/web"
-	_ "github.com/gwuhaolin/livego/web"
 	"io/ioutil"
 	"log"
 	"net"
