@@ -10,5 +10,5 @@ ADD livego.cfg /app/livego.cfg
 ADD rtsp-live-stream /app/rtsp-live-stream
 WORKDIR /app
 VOLUME /app/db.txt
-EXPOSE 7777 7001 7002 1935
+EXPOSE 8888  1935
 ENTRYPOINT ["/app/rtsp-live-stream"]
