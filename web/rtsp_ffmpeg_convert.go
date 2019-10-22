@@ -2,9 +2,10 @@ package web
 
 // 将rtsp 转换成rtmp
 import (
+	"crypto/md5"
+	"fmt"
 	"log"
 	"os/exec"
-	"regexp"
 	"strings"
 	"time"
 )
@@ -116,9 +117,11 @@ func (c RtspConverter) start(rtsp string) string {
 }
 
 func getRTSPKey(rtsp string) string {
-	r, _ := regexp.Compile("[:/@\\._]")
-	name := r.ReplaceAllString(rtsp, "_")
-	return name
+	data := []byte(rtsp)
+	has := md5.Sum(data)
+	md5str1 := fmt.Sprintf("%x", has) //将[]byte转成16进制
+	fmt.Println(md5str1)
+	return md5str1
 }
 
 func (c RtspConverter) stop(rtsp string) {

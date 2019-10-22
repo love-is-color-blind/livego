@@ -5,17 +5,25 @@
     <title>API</title>
     <link href="https://cdn.bootcss.com/pure/1.0.1/pure-min.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>.button-warning {
+            color: white;
+            background: rgb(223, 117, 20);
+        }
+        table {
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
 <input id="addInput" size="50" placeholder="RTSP地址">
 <button onclick="add()">添加</button>
 
-<table class="pure-table  pure-table-horizontal pure-table-bordered">
+<table class="pure-table  pure-table-horizontal pure-table-bordered" >
     <thead>
     <tr>
         <td> #</td>
         <td>流地址</td>
-        <td> -</td>
+        <td> 操作</td>
     </tr>
     </thead>
     <tbody>
@@ -33,17 +41,22 @@
     }
 
     function render(list) {
+        if(list == 'null') {
+            return
+        }
         list = list ? JSON.parse(list) : []
 
         var html = [];
         for (var i = 0; i < list.length; i++) {
-            var tr = "<tr><td>{index}</td><td>{rtsp}<br>{rtmp}<br>{httpFlv}<br>{hls}</td><td>{opt}</td></tr>"
+            var tr = "<tr><td>{index}</td><td>{rtsp}<br>{rtmp}<br>{httpFlv}<br>{hls}</td><td><button class='pure-button button-warning'  onclick='remove(\"{rtsp}\")'>删除</button></td></tr>"
 
             var info = list[i];
-            tr = tr.replace("{index}", i + 1);
             for (var k in info) {
                 tr = tr.replace('{' + k + '}', info[k])
             }
+
+            tr = tr.replace("{index}", i + 1);
+            tr = tr.replace("{rtsp}", info.rtsp);
 
             html.push(tr)
         }
@@ -55,8 +68,7 @@
         get('/list', render)
     }
 
-    function remove() {
-        var rtsp = this.rtsp;
+    function remove(rtsp) {
         get('/remove?rtsp=' + rtsp, getList)
     }
 
