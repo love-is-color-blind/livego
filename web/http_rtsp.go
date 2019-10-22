@@ -21,10 +21,11 @@ var converter = NewRtspConverter()
 func list(w http.ResponseWriter, req *http.Request) {
 	list := converter.GetAll()
 	ip := getIp(req)
+	port := getPort(req)
 	var a []StreamInfo
 
 	for _, rtsp := range list {
-		info := GetInfo(rtsp, ip)
+		info := GetInfo(rtsp, ip, port)
 		a = append(a, info)
 	}
 
@@ -39,7 +40,8 @@ func add(w http.ResponseWriter, req *http.Request) {
 		if name != "" {
 			saveRtspToDisk()
 			ip := getIp(req)
-			addressList := GetInfo(rtsp, ip)
+			port := getPort(req)
+			addressList := GetInfo(rtsp, ip, port)
 			bytes, e := json.Marshal(addressList)
 			if e != nil {
 				w.Write([]byte("false"))
@@ -53,6 +55,11 @@ func add(w http.ResponseWriter, req *http.Request) {
 func getIp(req *http.Request) string {
 	ip := req.Host
 	ip = ip[0:strings.LastIndex(ip, ":")]
+	return ip
+}
+func getPort(req *http.Request) string {
+	ip := req.Host
+	ip = ip[strings.LastIndex(ip, ":"):]
 	return ip
 }
 func remove(w http.ResponseWriter, req *http.Request) {
