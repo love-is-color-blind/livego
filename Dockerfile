@@ -9,6 +9,5 @@ FROM index.docker.io/jrottenberg/ffmpeg:4.1-centos
 ADD rtsp-live-stream /app/rtsp-live-stream
 RUN echo '' > /app/db.txt
 WORKDIR /app
-VOLUME /app/db.txt
 EXPOSE 8888  1935
 ENTRYPOINT ["/app/rtsp-live-stream"]
