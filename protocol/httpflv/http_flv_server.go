@@ -5,7 +5,6 @@ import (
 	"github.com/gwuhaolin/livego/av"
 	"github.com/gwuhaolin/livego/protocol/rtmp"
 	"log"
-	"net"
 	"net/http"
 	"strings"
 )
@@ -28,15 +27,6 @@ func NewServer(h av.Handler) *Server {
 	return &Server{
 		handler: h,
 	}
-}
-
-func (server *Server) Serve(l net.Listener) error {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		server.handleConn(w, r)
-	})
-	http.Serve(l, mux)
-	return nil
 }
 
 // 获取发布和播放器的信息
@@ -80,7 +70,7 @@ func (server *Server) getStream(w http.ResponseWriter, r *http.Request) {
 	w.Write(resp)
 }
 
-func (server *Server) handleConn(w http.ResponseWriter, r *http.Request) {
+func (server *Server) HandleConn(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Println("http flv handleConn panic: ", r)

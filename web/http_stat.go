@@ -29,7 +29,7 @@ func NewServer(h av.Handler, rtmpAddr string) *Server {
 	}
 }
 
-func (s *Server) AddOperaUrl(mux *http.ServeMux) {
+func (s *Server) AddStatApiUrl(mux *http.ServeMux) {
 	mux.HandleFunc("/rtmp/list", func(w http.ResponseWriter, r *http.Request) {
 		s.GetLiveStatics(w, r)
 	})

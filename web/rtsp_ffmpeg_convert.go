@@ -31,9 +31,8 @@ type StreamInfo struct {
 
 func GetInfo(rtsp string, ip string) StreamInfo {
 	name := getRTSPKey(rtsp)
-
-	var flv = "http://" + ip + ":7001/live/" + name + ".flv"
-	var hls = "http://" + ip + ":7002/live/" + name + ".m3u8"
+	var flv = "http://" + ip + ":7777/live/" + name + ".flv"
+	var hls = "http://" + ip + ":7777/live/" + name + ".m3u8"
 	var rtmp = "rtmp://" + ip + ":1935/live/" + name
 
 	return StreamInfo{

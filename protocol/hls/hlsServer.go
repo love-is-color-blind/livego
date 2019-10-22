@@ -44,16 +44,6 @@ func NewServer() *Server {
 	return ret
 }
 
-func (server *Server) Serve(listener net.Listener) error {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		server.handle(w, r)
-	})
-	server.listener = listener
-	http.Serve(listener, mux)
-	return nil
-}
-
 func (server *Server) GetWriter(info av.Info) av.WriteCloser {
 	var s *Source
 	ok := server.conns.Has(info.Key)
@@ -89,7 +79,7 @@ func (server *Server) checkStop() {
 	}
 }
 
-func (server *Server) handle(w http.ResponseWriter, r *http.Request) {
+func (server *Server) Handle(w http.ResponseWriter, r *http.Request) {
 	if path.Base(r.URL.Path) == "crossdomain.xml" {
 		w.Header().Set("Content-Type", "application/xml")
 		w.Write(crossdomainxml)

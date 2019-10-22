@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func AddRTSPUrl(mux *http.ServeMux) {
+func AddRTSPApiUrl(mux *http.ServeMux) {
 	loadRtspFormDisk()
 
 	mux.HandleFunc("/list", list)
