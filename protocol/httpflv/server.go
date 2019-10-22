@@ -35,9 +35,6 @@ func (server *Server) Serve(l net.Listener) error {
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		server.handleConn(w, r)
 	})
-	mux.HandleFunc("/streams", func(w http.ResponseWriter, r *http.Request) {
-		server.getStream(w, r)
-	})
 	http.Serve(l, mux)
 	return nil
 }
