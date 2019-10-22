@@ -16,12 +16,11 @@ import (
 )
 
 var (
-	version        = "master"
-	rtmpAddr       = flag.String("rtmp-addr", ":1935", "RTMP server listen address")
-	httpFlvAddr    = flag.String("httpflv-addr", ":7001", "HTTP-FLV server listen address")
-	hlsAddr        = flag.String("hls-addr", ":7002", "HLS server listen address")
-	webAddr        = flag.String("web-addr", ":7777", "HTTP Web interface server listen address")
-	configfilename = flag.String("cfgfile", "livego.cfg", "live configure filename")
+	version     = "master"
+	rtmpAddr    = flag.String("rtmp-addr", ":1935", "RTMP server listen address")
+	httpFlvAddr = flag.String("httpflv-addr", ":7001", "HTTP-FLV server listen address")
+	hlsAddr     = flag.String("hls-addr", ":7002", "HLS server listen address")
+	webAddr     = flag.String("web-addr", ":7777", "HTTP Web interface server listen address")
 )
 
 func init() {
@@ -130,7 +129,7 @@ func main() {
 		}
 	}()
 	log.Println("start livego, version", version)
-	err := configure.LoadConfig(*configfilename)
+	err := configure.LoadConfig()
 	if err != nil {
 		return
 	}

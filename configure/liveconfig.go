@@ -1,11 +1,5 @@
 package configure
 
-import (
-	"encoding/json"
-	"io/ioutil"
-	"log"
-)
-
 /*
 {
 	[
@@ -31,22 +25,13 @@ type ServerCfg struct {
 
 var RtmpServercfg ServerCfg
 
-func LoadConfig(configfilename string) error {
-	log.Printf("starting load configure file(%s)......", configfilename)
-	data, err := ioutil.ReadFile(configfilename)
-	if err != nil {
-		log.Printf("ReadFile %s error:%v", configfilename, err)
-		return err
-	}
+func LoadConfig() error {
+	RtmpServercfg.Server = append(RtmpServercfg.Server, Application{
+		Appname: "live",
+		Liveon:  "on",
+		Hlson:   "on",
+	})
 
-	log.Printf("loadconfig: \r\n%s", string(data))
-
-	err = json.Unmarshal(data, &RtmpServercfg)
-	if err != nil {
-		log.Printf("json.Unmarshal error:%v", err)
-		return err
-	}
-	log.Printf("get config json data:%v", RtmpServercfg)
 	return nil
 }
 
