@@ -15,31 +15,6 @@ type Response struct {
 	Message string `json:"message"`
 }
 
-func (r *Response) SendJson() (int, error) {
-	resp, _ := json.Marshal(r)
-	r.w.Header().Set("Content-Type", "application/json")
-	return r.w.Write(resp)
-}
-
-type Operation struct {
-	Method string `json:"method"`
-	URL    string `json:"url"`
-	Stop   bool   `json:"stop"`
-}
-
-type OperationChange struct {
-	Method    string `json:"method"`
-	SourceURL string `json:"source_url"`
-	TargetURL string `json:"target_url"`
-	Stop      bool   `json:"stop"`
-}
-
-type ClientInfo struct {
-	url              string
-	rtmpRemoteClient *rtmp.Client
-	rtmpLocalClient  *rtmp.Client
-}
-
 type Server struct {
 	handler  av.Handler
 	session  map[string]*rtmprelay.RtmpRelay
