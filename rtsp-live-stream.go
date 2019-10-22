@@ -18,8 +18,7 @@ var (
 	version  = "master"
 	rtmpAddr = flag.String("rtmp-addr", ":1935", "RTMP server listen address")
 
-	hlsAddr = flag.String("hls-addr", ":7002", "HLS server listen address")
-	webAddr = flag.String("web-addr", ":7777", "HTTP Web interface server listen address")
+	webAddr = flag.String("web-addr", ":8888", "HTTP Web interface server listen address")
 )
 
 func init() {

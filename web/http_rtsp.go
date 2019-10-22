@@ -59,7 +59,7 @@ func getIp(req *http.Request) string {
 }
 func getPort(req *http.Request) string {
 	ip := req.Host
-	ip = ip[strings.LastIndex(ip, ":"):]
+	ip = ip[strings.LastIndex(ip, ":")+1:]
 	return ip
 }
 func remove(w http.ResponseWriter, req *http.Request) {
