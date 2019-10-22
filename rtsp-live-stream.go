@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"github.com/gwuhaolin/livego/configure"
 	"github.com/gwuhaolin/livego/protocol/hls"
 	"github.com/gwuhaolin/livego/protocol/httpflv"
 	"github.com/gwuhaolin/livego/protocol/rtmp"
@@ -129,10 +128,6 @@ func main() {
 		}
 	}()
 	log.Println("start livego, version", version)
-	err := configure.LoadConfig()
-	if err != nil {
-		return
-	}
 
 	stream := rtmp.NewRtmpStream()
 	hlsServer := startHls()

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gwuhaolin/livego/av"
-	"github.com/gwuhaolin/livego/configure"
 	"github.com/gwuhaolin/livego/protocol/rtmp/core"
 	"log"
 	"sync"
@@ -26,13 +25,7 @@ var (
 )
 
 func GetStaticPushList(appname string) ([]string, error) {
-	pushurlList, ok := configure.GetStaticPushUrlList(appname)
-
-	if !ok {
-		return nil, errors.New("no static push url")
-	}
-
-	return pushurlList, nil
+	return nil, errors.New("no static push url")
 }
 
 func GetAndCreateStaticPushObject(rtmpurl string) *StaticPush {

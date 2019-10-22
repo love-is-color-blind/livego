@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/gwuhaolin/livego/av"
-	"github.com/gwuhaolin/livego/configure"
 	"github.com/gwuhaolin/livego/container/flv"
 	"github.com/gwuhaolin/livego/protocol/rtmp/core"
 	"github.com/gwuhaolin/livego/utils/uid"
@@ -110,13 +109,8 @@ func (s *Server) handleConn(conn *core.Conn) error {
 		return err
 	}
 
-	appname, _, _ := connServer.GetInfo()
-
 	log.Printf("handleConn: IsPublisher=%v", connServer.IsPublisher())
 	if connServer.IsPublisher() {
-		if pushlist, ret := configure.GetStaticPushUrlList(appname); ret && (pushlist != nil) {
-			log.Printf("GetStaticPushUrlList: %v", pushlist)
-		}
 		reader := NewVirReader(connServer)
 		s.handler.HandleReader(reader)
 		log.Printf("new publisher: %+v", reader.Info())
