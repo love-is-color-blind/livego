@@ -69,7 +69,7 @@ func (s *Server) AddOperaUrl(mux *http.ServeMux) {
 }
 
 type stream struct {
-	Key             string `json:"key"`
+	Key             string `json:"Key"`
 	Url             string `json:"Url"`
 	StreamId        uint32 `json:"StreamId"`
 	VideoTotalBytes uint64 `json:123456`
@@ -153,7 +153,7 @@ func (s *Server) handlePull(w http.ResponseWriter, req *http.Request) {
 		pullRtmprelay, found := s.session[keyString]
 
 		if !found {
-			retString = fmt.Sprintf("session key[%s] not exist, please check it again.", keyString)
+			retString = fmt.Sprintf("session Key[%s] not exist, please check it again.", keyString)
 			io.WriteString(w, retString)
 			return
 		}
@@ -204,7 +204,7 @@ func (s *Server) handlePush(w http.ResponseWriter, req *http.Request) {
 	if oper[0] == "stop" {
 		pushRtmprelay, found := s.session[keyString]
 		if !found {
-			retString = fmt.Sprintf("<h1>session key[%s] not exist, please check it again.</h1>", keyString)
+			retString = fmt.Sprintf("<h1>session Key[%s] not exist, please check it again.</h1>", keyString)
 			io.WriteString(w, retString)
 			return
 		}

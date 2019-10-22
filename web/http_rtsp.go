@@ -19,36 +19,41 @@ func AddRTSPUrl(mux *http.ServeMux) {
 var converter = NewRtspConverter()
 
 func list(w http.ResponseWriter, req *http.Request) {
-
 	list := converter.GetAll()
+	ip := getIp(req)
+	var a []StreamInfo
 
-	if list != nil {
-		resp, _ := json.Marshal(list)
-
-		w.Write(resp)
+	for _, rtsp := range list {
+		info := GetInfo(rtsp, ip)
+		a = append(a, info)
 	}
+
+	bytes, _ := json.Marshal(a)
+	w.Write(bytes)
 
 }
 func add(w http.ResponseWriter, req *http.Request) {
 	rtsp := req.FormValue("rtsp")
-	var body = ""
-
 	if len(rtsp) != 0 {
 		name := converter.Add(rtsp)
 		if name != "" {
 			saveRtspToDisk()
-			ip := req.Host
-			ip = ip[0:strings.LastIndex(ip, ":")]
-			var flv = "http://" + ip + ":7001/live/" + name + ".flv"
-			var hls = "http://" + ip + ":7002/live/" + name + ".m3u8"
-			var rtmp = "rtmp://" + ip + ":1935/live/" + name
-			body = flv + "\r\n" + hls + "\r\n" + rtmp
+			ip := getIp(req)
+			addressList := GetInfo(rtsp, ip)
+			bytes, e := json.Marshal(addressList)
+			if e != nil {
+				w.Write([]byte("false"))
+			} else {
+				w.Write(bytes)
+			}
 		}
 	}
-	if body == "" {
-		body = "false"
-	}
-	w.Write([]byte(body))
+}
+
+func getIp(req *http.Request) string {
+	ip := req.Host
+	ip = ip[0:strings.LastIndex(ip, ":")]
+	return ip
 }
 func remove(w http.ResponseWriter, req *http.Request) {
 	rtsp := req.FormValue("rtsp")

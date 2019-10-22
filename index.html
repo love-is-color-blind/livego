@@ -3,21 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>API</title>
-    <style>
-        body {
-            width: 900px;
-            margin: 0 auto;
-        }
-    </style>
+    <link href="https://cdn.bootcss.com/pure/1.0.1/pure-min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-    <input id="addInput" size="50" placeholder="RTSP地址">
-    <input type="checkbox">转发到其他服务器</input>
-    <button onclick="add()" >添加</button>
+<input id="addInput" size="50" placeholder="RTSP地址">
+<button onclick="add()">添加</button>
+
+<table class="pure-table  pure-table-horizontal pure-table-bordered">
+    <thead>
+    <tr>
+        <td> #</td>
+        <td>流地址</td>
+        <td> -</td>
+    </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+
+</table>
 
 <ol id="list-box"></ol>
-
-
 
 
 <script>
@@ -27,20 +34,21 @@
 
     function render(list) {
         list = list ? JSON.parse(list) : []
-        var box = document.getElementById('list-box')
-        box.innerHTML = '';
+
+        var html = [];
         for (var i = 0; i < list.length; i++) {
-            var li = document.createElement('li')
-            li.appendChild(document.createTextNode(list[i]))
+            var tr = "<tr><td>{index}</td><td>{rtsp}<br>{rtmp}<br>{httpFlv}<br>{hls}</td><td>{opt}</td></tr>"
 
-            var btn = document.createElement('button')
-            btn.onclick = remove
-            btn.innerHTML = '删除'
-            btn.rtsp = list[i];
+            var info = list[i];
+            tr = tr.replace("{index}", i + 1);
+            for (var k in info) {
+                tr = tr.replace('{' + k + '}', info[k])
+            }
 
-            li.appendChild(btn)
-            box.appendChild(li)
+            html.push(tr)
         }
+        var box = document.getElementsByTagName('tbody')[0]
+        box.innerHTML = html.join('');
     }
 
     function getList() {

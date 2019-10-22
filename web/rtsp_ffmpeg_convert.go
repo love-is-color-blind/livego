@@ -20,6 +20,30 @@ type CmdInfo struct {
 	writer MyWriter
 }
 
+type StreamInfo struct {
+	Key     string `json:"key"`
+	Rtsp    string `json:"rtsp"`
+	Rtmp    string `json:"rtmp"`
+	HttpFlv string `json:"httpFlv"`
+	Hls     string `json:"hls"`
+}
+
+func GetInfo(rtsp string, ip string) StreamInfo {
+	name := getRTSPKey(rtsp)
+
+	var flv = "http://" + ip + ":7001/live/" + name + ".flv"
+	var hls = "http://" + ip + ":7002/live/" + name + ".m3u8"
+	var rtmp = "rtmp://" + ip + ":1935/live/" + name
+
+	return StreamInfo{
+		Key:     name,
+		Rtsp:    rtsp,
+		Rtmp:    rtmp,
+		HttpFlv: flv,
+		Hls:     hls,
+	}
+}
+
 func NewRtspConverter() *RtspConverter {
 	converter := &RtspConverter{
 		data: make(map[string]*CmdInfo),
@@ -62,8 +86,7 @@ func (c RtspConverter) GetAll() []string {
 
 func (c RtspConverter) start(rtsp string) string {
 	if rtsp != "" {
-		r, _ := regexp.Compile("[:/@\\._]")
-		name := r.ReplaceAllString(rtsp, "_")
+		name := getRTSPKey(rtsp)
 		// "ffmpeg -rtsp_transport tcp -i \"" + rtsp + "\" -vcodec copy -acodec aac -f flv  rtmp://localhost:1935/live/" + name
 		log.Println(rtsp)
 
@@ -90,6 +113,12 @@ func (c RtspConverter) start(rtsp string) string {
 		return name
 	}
 	return ""
+}
+
+func getRTSPKey(rtsp string) string {
+	r, _ := regexp.Compile("[:/@\\._]")
+	name := r.ReplaceAllString(rtsp, "_")
+	return name
 }
 
 func (c RtspConverter) stop(rtsp string) {
