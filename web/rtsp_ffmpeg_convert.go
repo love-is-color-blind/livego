@@ -32,6 +32,12 @@ type StreamInfo struct {
 
 func GetInfo(rtsp string, ip string, port string) StreamInfo {
 	name := getRTSPKey(rtsp)
+
+	host := getTargetHost()
+	if host != "localhost" {
+		ip = host
+	}
+
 	var flv = "http://" + ip + ":" + port + "/live/" + name + ".flv"
 	var hls = "http://" + ip + ":" + port + "/live/" + name + ".m3u8"
 	var rtmp = "rtmp://" + ip + ":1935/live/" + name
@@ -99,7 +105,7 @@ func (c RtspConverter) start(rtsp string) string {
 			"-acodec", "aac",
 			"-ar", "44100",
 			"-f", "flv",
-			"rtmp://"+getRtmpHost()+":1935/live/"+name)
+			"rtmp://"+getTargetHost()+":1935/live/"+name)
 		log.Println(strings.Join(cmd.Args, " "))
 
 		writer := MyWriter{converter: c, rtsp: rtsp, lastWriteTime: time.Now().Unix()}
@@ -148,7 +154,7 @@ func (c RtspConverter) KeepAlive() {
 			process := c.getProcess(rtsp)
 
 			timeout := time.Now().Unix() - process.writer.lastWriteTime
-			if process.cmd.ProcessState != nil || timeout > 30 {
+			if process.cmd.ProcessState != nil || timeout > 60 {
 				log.Println("################ Not Alive , Restarting #######################")
 				c.restart(rtsp)
 			}
@@ -171,7 +177,7 @@ func (w MyWriter) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-func getRtmpHost() string {
+func getTargetHost() string {
 	host := os.Getenv("LIVE_STREAM_REDIRECT_SERVER")
 	if host == "" {
 		host = "localhost"
