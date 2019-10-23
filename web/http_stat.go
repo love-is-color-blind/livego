@@ -64,10 +64,6 @@ func (server *Server) GetLiveList(w http.ResponseWriter, req *http.Request) {
 
 	port := getPort(req)
 	ip := getIp(req)
-	host := getTargetHost()
-	if host != "" {
-		ip = host
-	}
 	var list []StreamInfo
 	for _, pub := range msgs.Publishers {
 		list = append(list, GetInfoByKey(ip, port, pub.Key))
