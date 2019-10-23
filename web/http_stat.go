@@ -5,15 +5,8 @@ import (
 	"github.com/gwuhaolin/livego/av"
 	"github.com/gwuhaolin/livego/protocol/rtmp"
 	"github.com/gwuhaolin/livego/protocol/rtmp/rtmprelay"
-	"io"
 	"net/http"
 )
-
-type Response struct {
-	w       http.ResponseWriter
-	Status  int    `json:"status"`
-	Message string `json:"message"`
-}
 
 type Server struct {
 	handler  av.Handler
@@ -30,8 +23,11 @@ func NewServer(h av.Handler, rtmpAddr string) *Server {
 }
 
 func (s *Server) AddStatApiUrl(mux *http.ServeMux) {
-	mux.HandleFunc("/rtmp/list", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/rtmp/statics", func(w http.ResponseWriter, r *http.Request) {
 		s.GetLiveStatics(w, r)
+	})
+	mux.HandleFunc("/rtmp/list", func(w http.ResponseWriter, r *http.Request) {
+		s.GetLiveList(w, r)
 	})
 }
 
@@ -51,12 +47,41 @@ type streams struct {
 }
 
 func (server *Server) GetLiveStatics(w http.ResponseWriter, req *http.Request) {
-	rtmpStream := server.handler.(*rtmp.RtmpStream)
-	if rtmpStream == nil {
-		io.WriteString(w, "<h1>Get rtmp stream information error</h1>")
+	msgs, done := getStreams(server)
+	if done {
+		return
+	}
+	resp, _ := json.Marshal(msgs)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(resp)
+}
+
+func (server *Server) GetLiveList(w http.ResponseWriter, req *http.Request) {
+	msgs, done := getStreams(server)
+	if done {
 		return
 	}
 
+	port := getPort(req)
+	ip := getIp(req)
+	host := getTargetHost()
+	if host != "" {
+		ip = host
+	}
+	var list []StreamInfo
+	for _, pub := range msgs.Publishers {
+		list = append(list, GetInfoByKey(ip, port, pub.Key))
+	}
+
+	resp, _ := json.Marshal(list)
+	w.Write(resp)
+}
+
+func getStreams(server *Server) (*streams, bool) {
+	rtmpStream := server.handler.(*rtmp.RtmpStream)
+	if rtmpStream == nil {
+		return nil, true
+	}
 	msgs := new(streams)
 	for item := range rtmpStream.GetStreams().IterBuffered() {
 		if s, ok := item.Val.(*rtmp.Stream); ok {
@@ -71,7 +96,6 @@ func (server *Server) GetLiveStatics(w http.ResponseWriter, req *http.Request) {
 			}
 		}
 	}
-
 	for item := range rtmpStream.GetStreams().IterBuffered() {
 		ws := item.Val.(*rtmp.Stream).GetWs()
 		for s := range ws.IterBuffered() {
@@ -88,7 +112,5 @@ func (server *Server) GetLiveStatics(w http.ResponseWriter, req *http.Request) {
 			}
 		}
 	}
-	resp, _ := json.Marshal(msgs)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(resp)
+	return msgs, false
 }

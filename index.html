@@ -87,21 +87,24 @@
 
 
     // rtmp
-
     function renderRtmpList(list) {
         if (list == 'null' || !list) {
             return
         }
-        list = list ? JSON.parse(list).publishers : []
+        list = list ? JSON.parse(list) : []
         var html = [];
         for (var i = 0; i < list.length; i++) {
-            var tr = "<tr><td>{index}</td><td>{rtmp}</td></tr>"
+            var tr = "<tr><td>{index}</td><td>{rtmp}<br>{hls}<br>{httpFlv}</td></tr>"
 
             var info = list[i];
 
+            for (var k in info) {
+                tr = tr.replace('{' + k + '}', info[k])
+            }
+
             tr = tr.replace("{index}", i + 1);
-            tr = tr.replace("{rtmp}", info.Url);
-            tr = tr.replace("{rtmp}", info.Url);
+            tr = tr.replace("{rtmp}", info.rtmp);
+            tr = tr.replace("{rtmp}", info.rtmp);
 
             html.push(tr)
         }

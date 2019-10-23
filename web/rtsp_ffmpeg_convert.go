@@ -30,21 +30,23 @@ type StreamInfo struct {
 	Hls     string `json:"hls"`
 }
 
-func GetInfo(rtsp string, ip string, port string) StreamInfo {
-	name := getRTSPKey(rtsp)
+func GetInfoByRTSP(rtsp string, ip string, port string) StreamInfo {
+	key := getRTSPKey(rtsp)
+	info := GetInfoByKey(ip, port, key)
+	info.Rtsp = rtsp
+	return info
+}
 
+func GetInfoByKey(ip string, port string, key string) StreamInfo {
 	host := getTargetHost()
 	if host != "localhost" {
 		ip = host
 	}
-
-	var flv = "http://" + ip + ":" + port + "/live/" + name + ".flv"
-	var hls = "http://" + ip + ":" + port + "/live/" + name + ".m3u8"
-	var rtmp = "rtmp://" + ip + ":1935/live/" + name
-
+	var flv = "http://" + ip + ":" + port + "/live/" + key + ".flv"
+	var hls = "http://" + ip + ":" + port + "/live/" + key + ".m3u8"
+	var rtmp = "rtmp://" + ip + ":1935/live/" + key
 	return StreamInfo{
-		Key:     name,
-		Rtsp:    rtsp,
+		Key:     key,
 		Rtmp:    rtmp,
 		HttpFlv: flv,
 		Hls:     hls,
