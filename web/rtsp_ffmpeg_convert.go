@@ -178,7 +178,7 @@ func (w MyWriter) Write(p []byte) (n int, err error) {
 }
 
 func getTargetHost() string {
-	host := os.Getenv("LIVE_STREAM_REDIRECT_SERVER")
+	host := os.Getenv("LIVE_STREAM_PUSH_TARGET_SERVER")
 	if host == "" {
 		host = "localhost"
 	}

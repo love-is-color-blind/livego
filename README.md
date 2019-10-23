@@ -20,7 +20,7 @@
 docker hub 中搜索 rtsp-live-stream
 可以持久化 /db.txt 防止重启后数据丢失
 ### 转推模式，可以从一台服务器推到另一台服务器  
-    设置环境变量，LIVE_STREAM_REDIRECT_SERVER=另一台服务器IP
+    设置环境变量，LIVE_STREAM_PUSH_TARGET_SERVER=另一台服务器IP
     例如内网RTSP接口，推送到公网
     
 
