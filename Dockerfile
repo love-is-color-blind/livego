@@ -7,6 +7,7 @@
 
 FROM index.docker.io/jrottenberg/ffmpeg:4.1-centos
 ADD rtsp-live-stream /rtsp-live-stream
+ADD index.html /index.html
 RUN echo '' > /db.txt
 RUN chmod  u+x rtsp-live-stream
 EXPOSE 8888  1935
