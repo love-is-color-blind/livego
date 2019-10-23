@@ -6,9 +6,8 @@
 #RUN sudo yum install ffmpeg ffmpeg-devel -y
 
 FROM index.docker.io/jrottenberg/ffmpeg:4.1-centos
-ADD rtsp-live-stream /app/rtsp-live-stream
-RUN echo '' > /app/db.txt
-RUN chmod  u+x /app/rtsp-live-stream
-WORKDIR /app
+ADD rtsp-live-stream /rtsp-live-stream
+RUN echo '' > /db.txt
+RUN chmod  u+x rtsp-live-stream
 EXPOSE 8888  1935
-ENTRYPOINT ["/app/rtsp-live-stream"]
+ENTRYPOINT ["./rtsp-live-stream"]
