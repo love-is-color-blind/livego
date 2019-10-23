@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
@@ -98,7 +99,7 @@ func (c RtspConverter) start(rtsp string) string {
 			"-acodec", "aac",
 			"-ar", "44100",
 			"-f", "flv",
-			"rtmp://localhost:1935/live/"+name)
+			"rtmp://"+getRtmpHost()+":1935/live/"+name)
 		log.Println(strings.Join(cmd.Args, " "))
 
 		writer := MyWriter{converter: c, rtsp: rtsp, lastWriteTime: time.Now().Unix()}
@@ -168,4 +169,12 @@ func (w MyWriter) Write(p []byte) (n int, err error) {
 	str := string(p)
 	log.Println(str)
 	return len(p), nil
+}
+
+func getRtmpHost() string {
+	host := os.Getenv("LIVE_STREAM_REDIRECT_SERVER")
+	if host == "" {
+		host = "localhost"
+	}
+	return host
 }

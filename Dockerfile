@@ -11,4 +11,5 @@ ADD index.html /index.html
 RUN echo '' > /db.txt
 RUN chmod  u+x rtsp-live-stream
 EXPOSE 8888  1935
+ENV LIVE_STREAM_REDIRECT_SERVER localhost
 ENTRYPOINT ["./rtsp-live-stream"]
