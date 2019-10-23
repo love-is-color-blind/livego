@@ -8,7 +8,7 @@
 FROM index.docker.io/jrottenberg/ffmpeg:4.1-centos
 ADD rtsp-live-stream /app/rtsp-live-stream
 RUN echo '' > /app/db.txt
-#RUN sudo chmod 777 /app/rtsp-live-stream
+RUN sudo chmod  u+x /app/rtsp-live-stream
 WORKDIR /app
 EXPOSE 8888  1935
 ENTRYPOINT ["/app/rtsp-live-stream"]
