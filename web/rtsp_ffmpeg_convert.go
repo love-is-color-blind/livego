@@ -42,9 +42,9 @@ func GetInfoByKey(ip string, port string, key string) StreamInfo {
 	if host != "localhost" {
 		ip = host
 	}
-	var flv = "http://" + ip + ":" + port + "/live/" + key + ".flv"
-	var hls = "http://" + ip + ":" + port + "/live/" + key + ".m3u8"
-	var rtmp = "rtmp://" + ip + ":1935/live/" + key
+	var flv = "http://" + ip + ":" + port + "/" + key + ".flv"
+	var hls = "http://" + ip + ":" + port + "/" + key + ".m3u8"
+	var rtmp = "rtmp://" + ip + ":1935/" + key
 	return StreamInfo{
 		Key:     key,
 		Rtmp:    rtmp,
@@ -95,7 +95,7 @@ func (c RtspConverter) GetAll() []string {
 
 func (c RtspConverter) start(rtsp string) string {
 	if rtsp != "" {
-		name := getRTSPKey(rtsp)
+		key := getRTSPKey(rtsp)
 		// "ffmpeg -rtsp_transport tcp -i \"" + rtsp + "\" -vcodec copy -acodec aac -f flv  rtmp://localhost:1935/live/" + name
 		log.Println(rtsp)
 
@@ -107,7 +107,7 @@ func (c RtspConverter) start(rtsp string) string {
 			"-acodec", "aac",
 			"-ar", "44100",
 			"-f", "flv",
-			"rtmp://"+getTargetHost()+":1935/live/"+name)
+			"rtmp://"+getTargetHost()+":1935/"+key)
 		log.Println(strings.Join(cmd.Args, " "))
 
 		writer := MyWriter{converter: c, rtsp: rtsp, lastWriteTime: time.Now().Unix()}
@@ -119,7 +119,7 @@ func (c RtspConverter) start(rtsp string) string {
 			rtsp:   rtsp,
 			writer: writer,
 		}
-		return name
+		return key
 	}
 	return ""
 }
@@ -129,7 +129,7 @@ func getRTSPKey(rtsp string) string {
 	has := md5.Sum(data)
 	md5str1 := fmt.Sprintf("%x", has) //将[]byte转成16进制
 	fmt.Println(md5str1)
-	return md5str1
+	return "live/" + md5str1
 }
 
 func (c RtspConverter) stop(rtsp string) {
